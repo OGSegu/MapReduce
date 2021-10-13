@@ -53,14 +53,23 @@ class MyMapper extends Mapper[Object, Text, Text, IntWritable] {
 
   override def map(key: Object, value: Text,
                    context: Mapper[Object, Text, Text, IntWritable]#Context): Unit = {
-    val kv = value.toString.toLowerCase
+    val kv = value.toString
     val words = kv.split("\\s")
     words.foreach(word => {
       if (!StringUtils.isEmpty(word)) {
-        text.set(word)
+        text.set(processWord(word))
         context.write(text, one)
       }
     })
+  }
+
+  def processWord(value: String): String = {
+    val sb = new StringBuilder()
+    value.filter(ch => Character.isAlphabetic(ch) || Character.isDigit(ch))
+      .map(ch => Character.toLowerCase(ch))
+      .foreach(ch => sb.append(ch))
+
+    sb.toString()
   }
 }
 
