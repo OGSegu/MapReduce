@@ -1,3 +1,4 @@
+import org.apache.commons.lang.StringUtils
 import org.apache.hadoop.conf.{Configuration, Configured}
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.{IntWritable, Text}
@@ -55,8 +56,10 @@ class MyMapper extends Mapper[Object, Text, Text, IntWritable] {
     val kv = value.toString.toLowerCase
     val words = kv.split("\\s")
     words.foreach(word => {
-      text.set(word)
-      context.write(text, one)
+      if (!StringUtils.isEmpty(word)) {
+        text.set(word)
+        context.write(text, one)
+      }
     })
   }
 }
